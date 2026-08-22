@@ -4,7 +4,7 @@
 
 - Gayatri Dayanand Bhagwat
 -Gadekar Varsha Vilas
--Gawaki Shravani Ganesh 
+-Gawali Shravani Ganesh 
 -Patil Dnyaneshwari Pravin
 
  Problem Statement
