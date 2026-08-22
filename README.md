@@ -1,19 +1,19 @@
-AgentX — Research & Competitor Intelligence Agent
+# AgentX — Research & Competitor Intelligence Agent
 
- Team Members
+## Team Members
 
 * Gayatri Dayanand Bhagwat
 * Gadekar Varsha Vilas
 * Gawali Shravani Ganesh
 * Patil Dnyaneshwari Pravin
 
- Problem Statement
+## Problem Statement
 
 Organizations need to continuously monitor research, competitors and industry news. Manual monitoring is time-consuming and can miss important information.
 
 AgentX provides an autonomous AI agent for collecting, analyzing and generating actionable intelligence.
 
- Project Description
+## Project Description
 
 AgentX is an AI-powered Research & Competitor Intelligence Agent using a **LangGraph-based agentic framework**.
 
@@ -28,7 +28,7 @@ It can:
 * Replan when required
 * Generate actionable intelligence
 
- Agent Workflow
+## Agent Workflow
 
 ```text
 Understand → Plan → Select Tool → Act
@@ -36,7 +36,7 @@ Understand → Plan → Select Tool → Act
 → Self-Evaluate → Replan → Finalize
 ```
 
- Task 5 — Agent Framework
+## Task 5 — Agent Framework
 
 AgentX implements the required agentic capabilities using **LangGraph**:
 
@@ -58,7 +58,7 @@ AgentX implements the required agentic capabilities using **LangGraph**:
 * Autonomous replanning
 * Adaptive task decomposition
 
-Multi-Agent Architecture
+### Multi-Agent Architecture
 
 ```text
 User Task
@@ -79,7 +79,7 @@ Research    News      Competitor
              Finalizer
 ```
 
- External Tools
+## External Tools
 
 * 🔬 Research API — scientific research
 * 📚 Crossref — DOI verification
@@ -87,7 +87,7 @@ Research    News      Competitor
 * 📰 News Search — industry developments
 * 🏢 Competitor Intelligence — competitor analysis
 
- Adversarial Test
+## Adversarial Test
 
 Run:
 
@@ -121,7 +121,7 @@ Final Result
 
 The adversarial test successfully demonstrates failure recovery, tool fallback, conflict handling, verification, replanning and loop/deadlock detection.
 
- Memory
+## Memory
 
 AgentX maintains short-term conversation memory using:
 
@@ -131,7 +131,7 @@ agentx_memory.json
 
 Recent interactions are used as context for follow-up tasks.
 
- Technologies Used
+## Technologies Used
 
 * Python
 * LangGraph
@@ -146,7 +146,7 @@ Recent interactions are used as context for follow-up tasks.
 * Git & GitHub
 * python-dotenv
 
- Run the Project
+## Run the Project
 
 Install dependencies:
 
@@ -166,7 +166,7 @@ Run the agent:
 python react_agent.py
 ```
 
- Result
+## Result
 
 AgentX produces an intelligence report containing:
 
