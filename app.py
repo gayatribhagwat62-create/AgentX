@@ -910,7 +910,7 @@ Competitor Specialist
 
 
 # ------------------------------------------------------------
-# AGENT
+# AGENTIC REASONING
 # ------------------------------------------------------------
 
 elif selected == "agent":
@@ -925,19 +925,230 @@ elif selected == "agent":
 
 <div class="feature-panel-text">
 
-AgentX follows an agentic workflow:
+<b>AgentX follows a dynamic agentic reasoning architecture.</b>
 
 <br><br>
 
+<div style="
+display:flex;
+align-items:center;
+justify-content:center;
+flex-wrap:wrap;
+gap:8px;
+font-size:15px;
+font-weight:700;
+color:#312e81;
+">
+
+<span>Understand</span>
+<span>→</span>
+<span>Plan</span>
+<span>→</span>
+<span>Select Tool</span>
+<span>→</span>
+<span>Act</span>
+<span>→</span>
+<span>Observe</span>
+<span>→</span>
+<span>Reason</span>
+<span>→</span>
+<span>Evaluate</span>
+<span>→</span>
+<span>Replan</span>
+
+</div>
+
+<br>
+
+AgentX does not follow a fixed sequence. The agent dynamically
+selects tools, evaluates evidence, detects failures and can
+replan when additional investigation is required.
+
+</div>
+
+</div>
+""",
+        unsafe_allow_html=True
+    )
+
+    st.markdown("### 🧠 Agent Capabilities")
+
+    agent_col1, agent_col2 = st.columns(2)
+
+    with agent_col1:
+
+        st.markdown(
+            """
+<div class="tool-detail">
+
+<div class="tool-detail-title">
+🧠 Dynamic Planning
+</div>
+
+<div class="tool-detail-text">
+Creates an investigation plan dynamically based on
+the user's objective instead of following a fixed workflow.
+</div>
+
+</div>
+""",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            """
+<div class="tool-detail">
+
+<div class="tool-detail-title">
+🔀 Conditional Routing
+</div>
+
+<div class="tool-detail-text">
+Routes the task to Research, News, Competitor or
+Verification agents depending on the current state.
+</div>
+
+</div>
+""",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            """
+<div class="tool-detail">
+
+<div class="tool-detail-title">
+⚡ Parallel Execution
+</div>
+
+<div class="tool-detail-text">
+Multiple specialist agents can execute independently
+and gather evidence in parallel.
+</div>
+
+</div>
+""",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            """
+<div class="tool-detail">
+
+<div class="tool-detail-title">
+💾 Shared State & Checkpointing
+</div>
+
+<div class="tool-detail-text">
+Agents share task state and checkpoint progress so
+execution can recover from failures.
+</div>
+
+</div>
+""",
+            unsafe_allow_html=True
+        )
+
+    with agent_col2:
+
+        st.markdown(
+            """
+<div class="tool-detail">
+
+<div class="tool-detail-title">
+♻️ Autonomous Replanning
+</div>
+
+<div class="tool-detail-text">
+The planner can modify the investigation strategy
+when evidence is incomplete or a tool fails.
+</div>
+
+</div>
+""",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            """
+<div class="tool-detail">
+
+<div class="tool-detail-title">
+🛡️ Failure Recovery & Fallback
+</div>
+
+<div class="tool-detail-text">
+If an external tool fails, AgentX can use an alternative
+tool or route the task to another specialist.
+</div>
+
+</div>
+""",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            """
+<div class="tool-detail">
+
+<div class="tool-detail-title">
+⚔️ Conflict Resolution
+</div>
+
+<div class="tool-detail-text">
+Detects conflicting evidence and sends uncertain claims
+for additional verification before finalizing the result.
+</div>
+
+</div>
+""",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            """
+<div class="tool-detail">
+
+<div class="tool-detail-title">
+🔎 Verification & Self-Evaluation
+</div>
+
+<div class="tool-detail-text">
+Evaluates evidence quality, confidence and unresolved
+uncertainty before producing the final report.
+</div>
+
+</div>
+""",
+            unsafe_allow_html=True
+        )
+
+    st.markdown("### 🔄 Runtime Agent Loop")
+
+    st.markdown(
+        """
+<div class="feature-panel">
+
+<div class="feature-panel-text">
+
 <b>
-Understand → Plan → Select Tool → Act →
-Observe → Reason → Generate Result
+Goal
+→ Dynamic Plan
+→ Route
+→ Parallel Agents
+→ Observe
+→ Analyze
+→ Verify
+→ Self-Evaluate
+→ Replan
+→ Finalize
 </b>
 
 <br><br>
 
-The agent dynamically determines which external
-tool is appropriate for the user's request.
+This loop enables AgentX to recover from tool failures,
+resolve conflicting evidence and adapt its execution
+strategy autonomously.
 
 </div>
 
@@ -963,28 +1174,32 @@ elif selected == "tools":
 
 <div class="feature-panel-text">
 
-AgentX integrates external information sources
-instead of relying only on the language model.
+AgentX uses multiple external information sources
+and specialist tools instead of relying only on the
+language model.
 
 <br><br>
 
-<b>Research</b> → scientific publications
+<b>Tool Selection:</b>
+
+<br><br>
+
+Research → Scientific Evidence
 
 <br>
-
-<b>Crossref</b> → DOI verification
-
-<br>
-
-<b>OpenAlex</b> → research metadata
+Crossref → DOI Verification
 
 <br>
-
-<b>News</b> → recent industry developments
+OpenAlex → Research Metadata
 
 <br>
+News → Current Industry Signals
 
-<b>Competitor Tool</b> → company intelligence
+<br>
+Competitor Intelligence → Company Analysis
+
+<br>
+Verification → Evidence Validation
 
 </div>
 
@@ -992,8 +1207,6 @@ instead of relying only on the language model.
 """,
         unsafe_allow_html=True
     )
-
-    # TOOL DETAILS
 
     st.markdown("### 🔧 Tool Details")
 
@@ -1011,7 +1224,7 @@ instead of relying only on the language model.
 
 <div class="tool-detail-text">
 Searches scientific publications and research
-related to the user's intelligence task.
+relevant to the intelligence objective.
 </div>
 
 </div>
@@ -1028,8 +1241,8 @@ related to the user's intelligence task.
 </div>
 
 <div class="tool-detail-text">
-Provides publication metadata and DOI
-verification for research evidence.
+Verifies DOI information and retrieves publication
+metadata for research evidence.
 </div>
 
 </div>
@@ -1046,8 +1259,8 @@ verification for research evidence.
 </div>
 
 <div class="tool-detail-text">
-Provides research metadata and scholarly
-information from a large academic database.
+Provides scholarly metadata and research information
+from a large academic database.
 </div>
 
 </div>
@@ -1066,8 +1279,8 @@ information from a large academic database.
 </div>
 
 <div class="tool-detail-text">
-Finds recent industry developments and news
-signals relevant to the intelligence request.
+Finds recent industry developments and news signals
+relevant to the investigation.
 </div>
 
 </div>
@@ -1084,8 +1297,8 @@ signals relevant to the intelligence request.
 </div>
 
 <div class="tool-detail-text">
-Investigates competitor activity and combines
-research and news signals for comparison.
+Analyzes competitor activity, positioning, risks
+and opportunities.
 </div>
 
 </div>
@@ -1098,12 +1311,12 @@ research and news signals for comparison.
 <div class="tool-detail">
 
 <div class="tool-detail-title">
-🧠 ReAct Agent
+🔎 Verification Agent
 </div>
 
 <div class="tool-detail-text">
-Plans actions, selects tools, observes results
-and reasons over the collected information.
+Checks conflicting or uncertain evidence and improves
+confidence before finalization.
 </div>
 
 </div>
@@ -1111,7 +1324,56 @@ and reasons over the collected information.
             unsafe_allow_html=True
         )
 
+    st.markdown("### 🔗 Agent ↔ Tool Architecture")
 
+    st.markdown(
+        """
+<div class="feature-panel">
+
+<div class="feature-panel-text">
+
+<div style="
+text-align:center;
+font-size:16px;
+font-weight:750;
+color:#312e81;
+line-height:2;
+">
+
+🧠 <b>Agent Planner</b>
+<br>
+↓
+<br>
+🔀 <b>Conditional Router</b>
+<br>
+↓
+<br>
+🔬 Research &nbsp;&nbsp; 📰 News &nbsp;&nbsp; 🏢 Competitor
+<br>
+↓
+<br>
+📊 <b>Shared Evidence State</b>
+<br>
+↓
+<br>
+🔎 <b>Verification</b>
+<br>
+↓
+<br>
+🧪 <b>Self-Evaluation</b>
+<br>
+↓
+<br>
+♻️ <b>Autonomous Replanning</b>
+
+</div>
+
+</div>
+
+</div>
+""",
+        unsafe_allow_html=True
+    )
 # ------------------------------------------------------------
 # MEMORY
 # ------------------------------------------------------------
