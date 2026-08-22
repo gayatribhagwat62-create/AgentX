@@ -3,8 +3,9 @@
  Team Members
 
 - Gayatri Dayanand Bhagwat
-
----
+-Gadekar Varsha Vilas
+-Gawaki Shravani Ganesh 
+-Patil Dnyaneshwari Pravin
 
  Problem Statement
 
