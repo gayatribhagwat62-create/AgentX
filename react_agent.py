@@ -9,6 +9,8 @@ from tools.knowledge import search_knowledge
 from tools.research import search_research
 from tools.news import search_news
 from tools.competitor import search_competitor
+from tools.crossref import search_crossref
+from tools.openalex import search_openalex
 
 
 # ============================================================
@@ -136,6 +138,47 @@ TOOLS = [
             "required": ["company", "topic"]
         }
     }
+},
+{
+    "type": "function",
+    "function": {
+        "name": "search_crossref",
+        "description": """
+        Search Crossref for scientific publications.
+        Use this when reliable academic publication
+        metadata or DOI information is needed.
+        """,
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string"
+                }
+            },
+            "required": ["query"]
+        }
+    }
+},
+
+{
+    "type": "function",
+    "function": {
+        "name": "search_openalex",
+        "description": """
+        Search OpenAlex for scientific research works.
+        Use this for research discovery and publication
+        information.
+        """,
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string"
+                }
+            },
+            "required": ["query"]
+        }
+    }
 }
 ]
 
@@ -257,7 +300,7 @@ Only show short action/status messages.
         try:
 
             response = client.chat.completions.create(
-                model="openrouter/free",
+                model = "gpt-4o-mini",
                 messages=messages,
                 tools=TOOLS,
                 tool_choice="auto"
@@ -417,6 +460,36 @@ Only show short action/status messages.
                 "👀 Observation: "
                 "competitor intelligence retrieved"
             )
+            elif tool_name == "search_crossref":
+
+                 query = arguments["query"]
+
+                 result = search_crossref(query)
+
+                 if isinstance(result, list):
+                   print(
+                      f"👀 Observation: "
+                     f"{len(result)} Crossref results found"
+                    )
+                 else:
+                    print(
+                    f"👀 Observation: {result}"
+                    )
+            elif tool_name == "search_openalex":
+
+                query = arguments["query"]
+
+                result = search_openalex(query)
+
+                if isinstance(result, list):
+                    print(
+                     f"👀 Observation: "
+                     f"{len(result)} OpenAlex results found"
+                        )
+                else:
+                    print(
+                        f"👀 Observation: {result}"
+                )
             # =================================================
             # UNKNOWN TOOL
             # =================================================
