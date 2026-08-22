@@ -129,7 +129,7 @@ A controlled research-tool failure was injected and diagnosed automatically. The
 | Tool calls        |         4 |         2 |         50% |
 | Errors            |         2 |         0 |        100% |
 | Task success rate |      100% |      100% |  Maintained |
-
+   
 The observability test generated a trace file:
 
 ```text
