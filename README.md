@@ -9,173 +9,95 @@
 
 ## Problem Statement
 
-Organizations need to continuously monitor research, competitors and industry news. Manual monitoring is time-consuming and can miss important information.
-
-AgentX provides an autonomous AI agent for collecting, analyzing and generating actionable intelligence.
+Organizations need timely information about research, competitors, patents, and industry developments. Manual monitoring is time-consuming and can miss important updates.
 
 ## Project Description
 
-AgentX is an AI-powered Research & Competitor Intelligence Agent using a **LangGraph-based agentic framework**.
-
-It can:
-
-* Understand user goals
-* Dynamically plan tasks
-* Select appropriate tools
-* Coordinate multiple agents
-* Analyze and verify evidence
-* Detect conflicts and failures
-* Replan when required
-* Generate actionable intelligence
+**AgentX** is an autonomous AI-powered Research & Competitor Intelligence Agent using a ReAct-style workflow. It can plan tasks, select tools, gather evidence, analyze information, verify claims, detect uncertainty, recover from failures, and generate actionable intelligence.
 
 ## Agent Workflow
 
 ```text
-Understand → Plan → Select Tool → Act
-→ Observe → Analyze → Verify
-→ Self-Evaluate → Replan → Finalize
-```
-
-## Task 5 — Agent Framework
-
-AgentX implements the required agentic capabilities using **LangGraph**:
-
-* Dynamic planning
-* Multi-agent orchestration
-* Conditional routing
-* Parallel execution
-* Shared state
-* Checkpointing
-* Failure recovery
-* Tool fallback
-* Conflicting-evidence handling
-* Uncertainty-aware decisions
-* Resource-aware execution
-* Self-evaluation
-* Hypothesis verification
-* Memory-based reasoning
-* Loop/deadlock detection
-* Autonomous replanning
-* Adaptive task decomposition
-
-### Multi-Agent Architecture
-
-```text
-User Task
+User Goal
    ↓
-Dynamic Planner
+Planning
    ↓
-┌────────────┬────────────┐
-Research    News      Competitor
- Agent      Agent        Agent
-   └────────────┬─────────┘
-                ↓
-        Verification Agent
-                ↓
-          Self-Evaluation
-                ↓
-        Autonomous Replanner
-                ↓
-             Finalizer
-```
-
-## External Tools
-
-* 🔬 Research API — scientific research
-* 📚 Crossref — DOI verification
-* 🌐 OpenAlex — research metadata
-* 📰 News Search — industry developments
-* 🏢 Competitor Intelligence — competitor analysis
-
-## Adversarial Test
-
-Run:
-
-```bash
-python react_agent.py
-```
-
-Select:
-
-```text
-2. Adversarial Task 5 test
-```
-
-The test intentionally demonstrates:
-
-```text
-Tool Failure
-↓
-Parallel Agent Execution
-↓
-Conflicting Evidence
-↓
+Tool Selection
+   ↓
+Parallel Execution
+   ↓
+Evidence Collection
+   ↓
+Analysis
+   ↓
 Verification
-↓
-Autonomous Replanning
-↓
+   ↓
 Self-Evaluation
-↓
-Final Result
+   ↓
+Replanning
+   ↓
+Final Intelligence Report
 ```
-
-The adversarial test successfully demonstrates failure recovery, tool fallback, conflict handling, verification, replanning and loop/deadlock detection.
-
-## Memory
-
-AgentX maintains short-term conversation memory using:
-
-```text
-agentx_memory.json
-```
-
-Recent interactions are used as context for follow-up tasks.
 
 ## Technologies Used
 
 * Python
+* OpenRouter / OpenAI-compatible API
 * LangGraph
-* OpenRouter
 * Streamlit
 * ReAct Agent Architecture
 * Tool Calling
-* Research APIs
-* Crossref
-* OpenAlex
+* Scientific Research APIs
 * News APIs
 * Git & GitHub
-* python-dotenv
 
-## Run the Project
+## Task 5 — Adversarial Testing
 
-Install dependencies:
+AgentX was tested in adversarial mode for:
 
-```bash
-pip install -r requirements.txt
-```
+* Dynamic planning
+* Multi-agent orchestration
+* Parallel execution
+* Tool failure and fallback
+* Conflicting evidence
+* Verification
+* Uncertainty handling
+* Autonomous replanning
+* Loop/deadlock detection
+* Resource-aware execution
+* Self-evaluation
 
-Run Streamlit:
+## Task 6 — Evaluation
 
-```bash
-streamlit run app.py
-```
+AgentX was evaluated across multiple scenarios:
 
-Run the agent:
+* Normal
+* Ambiguous
+* Adversarial
+* Contradictory
+* Incomplete
+* Tool Failure
+* Repeated runs
 
-```bash
-python react_agent.py
-```
+Evaluation criteria included:
 
-## Result
+* Task completion
+* Groundedness
+* Hallucination checking
+* Uncertainty handling
+* Failure recovery
+* Consistency
+* Latency
+* Resource efficiency
+* Adversarial robustness
+* Baseline comparison
 
-AgentX produces an intelligence report containing:
+### Evaluation Result
 
-* Executive Summary
-* Key Findings
-* Emerging Trends
-* Risks
-* Opportunities
-* Evidence & Confidence
-* Unresolved Uncertainty
-* Actionable Recommendations
-* Sources
+**8/8 test runs completed successfully (100% completion rate).**
+
+The evaluation also measured average, minimum, and maximum latency and included repeated-run consistency testing.
+
+## Repository
+
+The complete AgentX implementation, evaluation scripts, and supporting tools are available in this repository.
