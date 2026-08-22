@@ -1,5 +1,52 @@
+
 import streamlit as st
+import json
+import os
 from react_agent import run_react_agent
+# ============================================================
+# PERSISTENT MEMORY
+# ============================================================
+
+MEMORY_FILE = "agentx_memory.json"
+
+
+def load_memory():
+    if os.path.exists(MEMORY_FILE):
+        try:
+            with open(MEMORY_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return []
+
+    return []
+
+
+def save_memory(history):
+    with open(MEMORY_FILE, "w", encoding="utf-8") as f:
+        json.dump(
+            history[-5:],
+            f,
+            ensure_ascii=False,
+            indent=2
+        )
+
+
+
+# ============================================================
+# SESSION STATE
+# ============================================================
+
+if "conversation_history" not in st.session_state:
+    st.session_state["conversation_history"] = load_memory()
+
+if "result" not in st.session_state:
+    st.session_state["result"] = ""
+
+if "task" not in st.session_state:
+    st.session_state["task"] = ""
+
+if "selected_section" not in st.session_state:
+    st.session_state["selected_section"] = "home"
 
 
 # ============================================================
@@ -18,90 +65,503 @@ st.set_page_config(
 # CUSTOM CSS
 # ============================================================
 
-st.markdown("""
+st.markdown(
+    """
 <style>
 
-    /* Main background */
-    .stApp {
-        background-color: #f7f8fc;
-    }
+/* ============================================================
+   GLOBAL
+============================================================ */
 
-    /* Header */
+.stApp {
+    background:
+        radial-gradient(
+            circle at top right,
+            rgba(99,102,241,0.10),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #f8faff 0%,
+            #f5f7fb 45%,
+            #eef2ff 100%
+        );
+
+    color: #172033;
+}
+
+.block-container {
+    max-width: 1450px;
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+}
+
+
+/* ============================================================
+   SIDEBAR
+============================================================ */
+
+section[data-testid="stSidebar"] {
+    background:
+        linear-gradient(
+            180deg,
+            #111827 0%,
+            #172554 100%
+        );
+
+    border-right: 1px solid rgba(255,255,255,0.08);
+}
+
+section[data-testid="stSidebar"] * {
+    color: #f8fafc !important;
+}
+
+section[data-testid="stSidebar"] .stCaption {
+    color: #aeb9cc !important;
+}
+
+section[data-testid="stSidebar"] hr {
+    border-color: rgba(255,255,255,0.12);
+}
+
+
+/* ============================================================
+   SIDEBAR BUTTONS
+============================================================ */
+
+section[data-testid="stSidebar"] .stButton > button {
+    background: rgba(255,255,255,0.06) !important;
+    color: white !important;
+    border: 1px solid rgba(255,255,255,0.10) !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
+}
+
+section[data-testid="stSidebar"] .stButton > button:hover {
+    background: rgba(99,102,241,0.35) !important;
+    border-color: #818cf8 !important;
+}
+
+
+/* ============================================================
+   HERO
+============================================================ */
+
+.hero {
+    position: relative;
+    padding: 42px 38px;
+    margin-bottom: 30px;
+    border-radius: 24px;
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            #111827 0%,
+            #1e1b4b 55%,
+            #312e81 100%
+        );
+
+    box-shadow:
+        0 20px 50px rgba(30,41,59,0.18);
+}
+
+.hero:after {
+    content: "";
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    right: -80px;
+    top: -100px;
+    border-radius: 50%;
+    background: rgba(129,140,248,0.22);
+}
+
+.hero-title {
+    position: relative;
+    z-index: 2;
+    font-size: 48px;
+    font-weight: 850;
+    letter-spacing: -1.5px;
+    color: white;
+    margin-bottom: 8px;
+}
+
+.hero-subtitle {
+    position: relative;
+    z-index: 2;
+    font-size: 18px;
+    color: #c7d2fe;
+}
+
+
+/* ============================================================
+   FEATURE CARDS
+============================================================ */
+
+.card {
+    background: rgba(255,255,255,0.94);
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 22px;
+    min-height: 125px;
+    margin-bottom: 12px;
+
+    box-shadow:
+        0 8px 25px rgba(15,23,42,0.06);
+
+    transition: all 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 14px 35px rgba(15,23,42,0.10);
+
+    border-color: #c7d2fe;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 750;
+    margin-bottom: 9px;
+    color: #111827;
+}
+
+.card-text {
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+
+/* ============================================================
+   CARD BUTTONS
+============================================================ */
+
+.card-button .stButton > button {
+    border-radius: 10px !important;
+    background: white !important;
+    color: #4338ca !important;
+    border: 1px solid #c7d2fe !important;
+    font-weight: 700 !important;
+}
+
+.card-button .stButton > button:hover {
+    background: #eef2ff !important;
+}
+
+
+/* ============================================================
+   HEADINGS
+============================================================ */
+
+h2 {
+    font-weight: 800 !important;
+    letter-spacing: -0.5px;
+    color: #111827;
+}
+
+h3 {
+    font-weight: 750 !important;
+    color: #1e293b;
+}
+
+
+/* ============================================================
+   TEXT AREA
+============================================================ */
+
+.stTextArea textarea {
+    border-radius: 16px !important;
+    border: 1px solid #dbe1ea !important;
+    background: white !important;
+    padding: 18px !important;
+    font-size: 16px !important;
+    line-height: 1.6 !important;
+
+    box-shadow:
+        0 5px 20px rgba(15,23,42,0.04);
+}
+
+.stTextArea textarea:focus {
+    border-color: #6366f1 !important;
+
+    box-shadow:
+        0 0 0 3px rgba(99,102,241,0.12) !important;
+}
+
+
+/* ============================================================
+   BUTTONS
+============================================================ */
+
+.stButton > button {
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+    border: 1px solid #dbe1ea !important;
+    min-height: 44px;
+
+    transition: all 0.2s ease !important;
+}
+
+.stButton > button:hover {
+    transform: translateY(-2px);
+    border-color: #818cf8 !important;
+
+    box-shadow:
+        0 7px 20px rgba(99,102,241,0.15);
+}
+
+button[kind="primary"] {
+    background:
+        linear-gradient(
+            135deg,
+            #4f46e5,
+            #7c3aed
+        ) !important;
+
+    border: none !important;
+    color: white !important;
+    font-size: 16px !important;
+    min-height: 52px !important;
+
+    box-shadow:
+        0 10px 25px rgba(79,70,229,0.25);
+}
+
+button[kind="primary"]:hover {
+    background:
+        linear-gradient(
+            135deg,
+            #4338ca,
+            #6d28d9
+        ) !important;
+
+    box-shadow:
+        0 14px 32px rgba(79,70,229,0.32);
+}
+
+
+/* ============================================================
+   STATUS
+============================================================ */
+
+.status {
+    background:
+        linear-gradient(
+            135deg,
+            #ecfdf5,
+            #f0fdf4
+        );
+
+    border: 1px solid #a7f3d0;
+    color: #047857;
+
+    padding: 14px 18px;
+    border-radius: 14px;
+
+    font-weight: 650;
+    margin: 15px 0;
+}
+
+
+/* ============================================================
+   REPORT
+============================================================ */
+
+.report {
+    background: rgba(255,255,255,0.96);
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+
+    padding: 30px;
+    margin-top: 12px;
+
+    box-shadow:
+        0 12px 35px rgba(15,23,42,0.07);
+
+    line-height: 1.75;
+}
+
+.report h1,
+.report h2,
+.report h3 {
+    color: #111827;
+}
+
+.report strong {
+    color: #312e81;
+}
+
+
+/* ============================================================
+   MEMORY
+============================================================ */
+
+.memory-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+
+    padding: 18px;
+    margin-bottom: 12px;
+
+    box-shadow:
+        0 5px 18px rgba(15,23,42,0.04);
+}
+
+
+/* ============================================================
+   EXPANDERS
+============================================================ */
+
+div[data-testid="stExpander"] {
+    background: rgba(255,255,255,0.9);
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    margin-bottom: 10px;
+}
+
+div[data-testid="stExpander"]:hover {
+    border-color: #a5b4fc;
+}
+
+
+/* ============================================================
+   TOOL BADGES
+============================================================ */
+
+.tool {
+    display: inline-flex;
+    align-items: center;
+
+    background: white;
+    border: 1px solid #e0e7ff;
+    color: #3730a3;
+
+    border-radius: 999px;
+
+    padding: 9px 15px;
+    margin: 5px 5px 5px 0;
+
+    font-size: 13px;
+    font-weight: 650;
+
+    box-shadow:
+        0 4px 12px rgba(79,70,229,0.06);
+}
+
+
+/* ============================================================
+   FEATURE INFO PANEL
+============================================================ */
+
+.feature-panel {
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #eef2ff
+        );
+
+    border: 1px solid #c7d2fe;
+    border-radius: 18px;
+
+    padding: 24px;
+    margin: 15px 0 25px;
+
+    box-shadow:
+        0 8px 25px rgba(79,70,229,0.08);
+}
+
+.feature-panel-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #312e81;
+    margin-bottom: 8px;
+}
+
+.feature-panel-text {
+    color: #475569;
+    line-height: 1.7;
+}
+
+
+/* ============================================================
+   TOOL DETAIL BOX
+============================================================ */
+
+.tool-detail {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-top: 10px;
+}
+
+.tool-detail-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #312e81;
+    margin-bottom: 5px;
+}
+
+.tool-detail-text {
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+
+/* ============================================================
+   FOOTER
+============================================================ */
+
+.footer {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 13px;
+    padding: 35px 15px 10px;
+}
+
+.footer b {
+    color: #4f46e5;
+}
+
+
+/* ============================================================
+   MOBILE
+============================================================ */
+
+@media (max-width: 900px) {
+
     .hero {
-        padding: 28px 10px 20px 10px;
+        padding: 30px 24px;
     }
 
     .hero-title {
-        font-size: 42px;
-        font-weight: 800;
-        margin-bottom: 5px;
+        font-size: 36px;
     }
 
     .hero-subtitle {
-        font-size: 18px;
-        color: #667085;
+        font-size: 16px;
     }
 
-    /* Cards */
     .card {
-        background: white;
-        border: 1px solid #e6e8ef;
-        border-radius: 14px;
-        padding: 20px;
-        margin-bottom: 15px;
+        min-height: auto;
     }
 
-    .card-title {
-        font-size: 17px;
-        font-weight: 700;
-        margin-bottom: 6px;
-    }
-
-    .card-text {
-        color: #667085;
-        font-size: 14px;
-    }
-
-    /* Status */
-    .status {
-        background: #ecfdf3;
-        border: 1px solid #abefc6;
-        color: #067647;
-        padding: 10px 14px;
-        border-radius: 10px;
-        font-weight: 600;
-        margin-bottom: 15px;
-    }
-
-    /* Tool badges */
-    .tool {
-        display: inline-block;
-        background: #f2f4f7;
-        border: 1px solid #e4e7ec;
-        border-radius: 20px;
-        padding: 7px 12px;
-        margin: 4px;
-        font-size: 13px;
-    }
-
-    /* Report */
     .report {
-        background: white;
-        border: 1px solid #e6e8ef;
-        border-radius: 14px;
-        padding: 25px;
+        padding: 20px;
     }
-
-    /* Footer */
-    .footer {
-        text-align: center;
-        color: #98a2b3;
-        font-size: 13px;
-        padding: 25px;
-    }
+}
 
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True
+)
 
 
 # ============================================================
@@ -111,51 +571,101 @@ st.markdown("""
 with st.sidebar:
 
     st.markdown("## 🤖 AgentX")
-
     st.caption("Autonomous Intelligence Platform")
 
     st.divider()
 
     st.markdown("### Agent Capabilities")
 
-    st.markdown("🔬 **Research Tracking**")
+    if st.button(
+        "🔬 Research Tracking",
+        use_container_width=True,
+        key="side_research"
+    ):
+        st.session_state["selected_section"] = "research"
+        st.rerun()
+
     st.caption("Scientific publications and research trends")
 
-    st.markdown("📰 **News Monitoring**")
+    if st.button(
+        "📰 News Monitoring",
+        use_container_width=True,
+        key="side_news"
+    ):
+        st.session_state["selected_section"] = "news"
+        st.rerun()
+
     st.caption("Recent industry developments")
 
-    st.markdown("🏢 **Competitor Intelligence**")
+    if st.button(
+        "🏢 Competitor Intelligence",
+        use_container_width=True,
+        key="side_competitor"
+    ):
+        st.session_state["selected_section"] = "competitors"
+        st.rerun()
+
     st.caption("Competitor activities and positioning")
 
-    st.markdown("🧠 **Agentic Reasoning**")
+    if st.button(
+        "🧠 Agentic Reasoning",
+        use_container_width=True,
+        key="side_agent"
+    ):
+        st.session_state["selected_section"] = "agent"
+        st.rerun()
+
     st.caption("Plan → Act → Observe → Decide")
 
-    st.markdown("🔧 **External Tools**")
+    if st.button(
+        "🔧 External Tools",
+        use_container_width=True,
+        key="side_tools"
+    ):
+        st.session_state["selected_section"] = "tools"
+        st.rerun()
+
     st.caption("Crossref • OpenAlex • Research APIs")
+
+    if st.button(
+        "🧠 Short-Term Memory",
+        use_container_width=True,
+        key="side_memory"
+    ):
+        st.session_state["selected_section"] = "memory"
+        st.rerun()
+
+    st.caption("Maintains recent conversation context")
 
     st.divider()
 
     st.markdown("### Agent Workflow")
 
-    st.markdown("""
-    **1. Understand Goal**
+    st.markdown(
+        """
+**1. Understand Goal**
 
-    ↓
+↓
 
-    **2. Select Tools**
+**2. Select Tools**
 
-    ↓
+↓
 
-    **3. Gather Information**
+**3. Gather Information**
 
-    ↓
+↓
 
-    **4. Analyze Results**
+**4. Analyze Results**
 
-    ↓
+↓
 
-    **5. Generate Insights**
-    """)
+**5. Remember Context**
+
+↓
+
+**6. Generate Insights**
+"""
+    )
 
     st.divider()
 
@@ -163,10 +673,11 @@ with st.sidebar:
 
 
 # ============================================================
-# HERO SECTION
+# HERO
 # ============================================================
 
-st.markdown("""
+st.markdown(
+    """
 <div class="hero">
 
 <div class="hero-title">
@@ -178,54 +689,468 @@ Autonomous Research & Competitor Intelligence
 </div>
 
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True
+)
 
 
 # ============================================================
-# TOP CARDS
+# FEATURE CARDS
 # ============================================================
+
+st.markdown("## ⚡ Intelligence Modules")
 
 col1, col2, col3, col4 = st.columns(4)
 
+
 with col1:
-    st.markdown("""
-    <div class="card">
-        <div class="card-title">🔬 Research</div>
-        <div class="card-text">
-        Track scientific publications and emerging research.
-        </div>
+
+    st.markdown(
+        """
+<div class="card">
+    <div class="card-title">🔬 Research</div>
+    <div class="card-text">
+    Track scientific publications, research trends
+    and DOI information.
     </div>
-    """, unsafe_allow_html=True)
+</div>
+""",
+        unsafe_allow_html=True
+    )
+
+    if st.button(
+        "Explore Research →",
+        key="card_research",
+        use_container_width=True
+    ):
+        st.session_state["selected_section"] = "research"
+        st.rerun()
+
 
 with col2:
-    st.markdown("""
-    <div class="card">
-        <div class="card-title">📰 News</div>
-        <div class="card-text">
-        Monitor recent developments and industry activity.
-        </div>
+
+    st.markdown(
+        """
+<div class="card">
+    <div class="card-title">📰 News</div>
+    <div class="card-text">
+    Monitor recent AI industry developments,
+    news and emerging trends.
     </div>
-    """, unsafe_allow_html=True)
+</div>
+""",
+        unsafe_allow_html=True
+    )
+
+    if st.button(
+        "Explore News →",
+        key="card_news",
+        use_container_width=True
+    ):
+        st.session_state["selected_section"] = "news"
+        st.rerun()
+
 
 with col3:
-    st.markdown("""
-    <div class="card">
-        <div class="card-title">⚔ Competitors</div>
-        <div class="card-text">
-        Identify competitive trends, risks and opportunities.
-        </div>
+
+    st.markdown(
+        """
+<div class="card">
+    <div class="card-title">⚔ Competitors</div>
+    <div class="card-text">
+    Compare companies, identify competitive trends,
+    risks and opportunities.
     </div>
-    """, unsafe_allow_html=True)
+</div>
+""",
+        unsafe_allow_html=True
+    )
+
+    if st.button(
+        "Explore Competitors →",
+        key="card_competitors",
+        use_container_width=True
+    ):
+        st.session_state["selected_section"] = "competitors"
+        st.rerun()
+
 
 with col4:
-    st.markdown("""
-    <div class="card">
-        <div class="card-title">🧠 Agentic AI</div>
-        <div class="card-text">
-        Dynamically selects tools and analyzes results.
-        </div>
+
+    st.markdown(
+        """
+<div class="card">
+    <div class="card-title">🧠 Agentic AI</div>
+    <div class="card-text">
+    Dynamically selects tools, reasons over results
+    and maintains task context.
     </div>
-    """, unsafe_allow_html=True)
+</div>
+""",
+        unsafe_allow_html=True
+    )
+
+    if st.button(
+        "View Agent →",
+        key="card_agent",
+        use_container_width=True
+    ):
+        st.session_state["selected_section"] = "agent"
+        st.rerun()
+
+
+# ============================================================
+# SELECTED FEATURE PANEL
+# ============================================================
+
+selected = st.session_state["selected_section"]
+
+
+# ------------------------------------------------------------
+# RESEARCH
+# ------------------------------------------------------------
+
+if selected == "research":
+
+    st.markdown(
+        """
+<div class="feature-panel">
+
+<div class="feature-panel-title">
+🔬 Research Intelligence
+</div>
+
+<div class="feature-panel-text">
+
+AgentX searches scientific research and external
+research sources to identify recent publications,
+important findings and DOI information.
+
+<br><br>
+
+<b>Tools:</b> Research API + Crossref + OpenAlex
+
+</div>
+
+</div>
+""",
+        unsafe_allow_html=True
+    )
+
+
+# ------------------------------------------------------------
+# NEWS
+# ------------------------------------------------------------
+
+elif selected == "news":
+
+    st.markdown(
+        """
+<div class="feature-panel">
+
+<div class="feature-panel-title">
+📰 News Intelligence
+</div>
+
+<div class="feature-panel-text">
+
+AgentX monitors recent AI industry developments
+and gathers relevant news to identify emerging
+trends and important events.
+
+<br><br>
+
+<b>Tool:</b> News Search API
+
+</div>
+
+</div>
+""",
+        unsafe_allow_html=True
+    )
+
+
+# ------------------------------------------------------------
+# COMPETITORS
+# ------------------------------------------------------------
+
+elif selected == "competitors":
+
+    st.markdown(
+        """
+<div class="feature-panel">
+
+<div class="feature-panel-title">
+⚔ Competitor Intelligence
+</div>
+
+<div class="feature-panel-text">
+
+AgentX can investigate companies such as
+<b>OpenAI</b> and <b>Google</b>, collect research
+and news signals, and identify competitive trends,
+risks and opportunities.
+
+<br><br>
+
+<b>Architecture:</b>
+
+<br>
+
+Competitor Specialist
+→ Research Specialist
+→ Orchestrator
+
+</div>
+
+</div>
+""",
+        unsafe_allow_html=True
+    )
+
+
+# ------------------------------------------------------------
+# AGENT
+# ------------------------------------------------------------
+
+elif selected == "agent":
+
+    st.markdown(
+        """
+<div class="feature-panel">
+
+<div class="feature-panel-title">
+🧠 Agentic Reasoning
+</div>
+
+<div class="feature-panel-text">
+
+AgentX follows an agentic workflow:
+
+<br><br>
+
+<b>
+Understand → Plan → Select Tool → Act →
+Observe → Reason → Generate Result
+</b>
+
+<br><br>
+
+The agent dynamically determines which external
+tool is appropriate for the user's request.
+
+</div>
+
+</div>
+""",
+        unsafe_allow_html=True
+    )
+
+
+# ------------------------------------------------------------
+# EXTERNAL TOOLS
+# ------------------------------------------------------------
+
+elif selected == "tools":
+
+    st.markdown(
+        """
+<div class="feature-panel">
+
+<div class="feature-panel-title">
+🔧 External Tool Stack
+</div>
+
+<div class="feature-panel-text">
+
+AgentX integrates external information sources
+instead of relying only on the language model.
+
+<br><br>
+
+<b>Research</b> → scientific publications
+
+<br>
+
+<b>Crossref</b> → DOI verification
+
+<br>
+
+<b>OpenAlex</b> → research metadata
+
+<br>
+
+<b>News</b> → recent industry developments
+
+<br>
+
+<b>Competitor Tool</b> → company intelligence
+
+</div>
+
+</div>
+""",
+        unsafe_allow_html=True
+    )
+
+    # TOOL DETAILS
+
+    st.markdown("### 🔧 Tool Details")
+
+    tool_col1, tool_col2 = st.columns(2)
+
+    with tool_col1:
+
+        st.markdown(
+            """
+<div class="tool-detail">
+
+<div class="tool-detail-title">
+🔬 Research API
+</div>
+
+<div class="tool-detail-text">
+Searches scientific publications and research
+related to the user's intelligence task.
+</div>
+
+</div>
+""",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            """
+<div class="tool-detail">
+
+<div class="tool-detail-title">
+📚 Crossref
+</div>
+
+<div class="tool-detail-text">
+Provides publication metadata and DOI
+verification for research evidence.
+</div>
+
+</div>
+""",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            """
+<div class="tool-detail">
+
+<div class="tool-detail-title">
+🌐 OpenAlex
+</div>
+
+<div class="tool-detail-text">
+Provides research metadata and scholarly
+information from a large academic database.
+</div>
+
+</div>
+""",
+            unsafe_allow_html=True
+        )
+
+    with tool_col2:
+
+        st.markdown(
+            """
+<div class="tool-detail">
+
+<div class="tool-detail-title">
+📰 News Search
+</div>
+
+<div class="tool-detail-text">
+Finds recent industry developments and news
+signals relevant to the intelligence request.
+</div>
+
+</div>
+""",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            """
+<div class="tool-detail">
+
+<div class="tool-detail-title">
+🏢 Competitor Intelligence
+</div>
+
+<div class="tool-detail-text">
+Investigates competitor activity and combines
+research and news signals for comparison.
+</div>
+
+</div>
+""",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            """
+<div class="tool-detail">
+
+<div class="tool-detail-title">
+🧠 ReAct Agent
+</div>
+
+<div class="tool-detail-text">
+Plans actions, selects tools, observes results
+and reasons over the collected information.
+</div>
+
+</div>
+""",
+            unsafe_allow_html=True
+        )
+
+
+# ------------------------------------------------------------
+# MEMORY
+# ------------------------------------------------------------
+
+elif selected == "memory":
+
+    memory_count = len(
+        st.session_state["conversation_history"]
+    )
+
+    st.markdown(
+        f"""
+<div class="feature-panel">
+
+<div class="feature-panel-title">
+🧠 Short-Term Memory
+</div>
+
+<div class="feature-panel-text">
+
+AgentX stores recent user requests and agent
+responses in Streamlit session state.
+
+<br><br>
+
+<b>Current stored interactions:</b>
+{memory_count}
+
+<br><br>
+
+The latest five interactions are supplied as
+context for follow-up tasks.
+
+</div>
+
+</div>
+""",
+        unsafe_allow_html=True
+    )
 
 
 # ============================================================
@@ -234,13 +1159,20 @@ with col4:
 
 st.markdown("## 🎯 Intelligence Request")
 
-st.markdown(
+st.write(
     "Tell AgentX what you want to investigate. "
-    "The agent will decide which tools are required."
+    "The agent will decide which tools are required and "
+    "use previous conversation context when available."
 )
 
-task = st.text_area(
+
+# ============================================================
+# TASK INPUT
+# ============================================================
+
+task_input = st.text_area(
     "Research objective",
+    value=st.session_state["task"],
     placeholder=(
         "Example:\n"
         "Compare OpenAI and Google in recent AI developments. "
@@ -252,6 +1184,8 @@ task = st.text_area(
     label_visibility="collapsed"
 )
 
+st.session_state["task"] = task_input
+
 
 # ============================================================
 # QUICK EXAMPLES
@@ -261,54 +1195,79 @@ st.markdown("### 💡 Try an example")
 
 example1, example2, example3 = st.columns(3)
 
+
 with example1:
+
     if st.button(
         "🔬 Generative AI Research",
         use_container_width=True
     ):
-        task = (
+
+        st.session_state["task"] = (
             "Find recent research about generative AI "
             "and provide DOI information."
         )
-        st.session_state["task"] = task
+
         st.rerun()
 
+
 with example2:
+
     if st.button(
         "⚔ OpenAI vs Google",
         use_container_width=True
     ):
-        task = (
+
+        st.session_state["task"] = (
             "Compare OpenAI and Google in recent AI "
             "developments. Identify competitive trends, "
             "risks, opportunities and recommendations."
         )
-        st.session_state["task"] = task
+
         st.rerun()
 
+
 with example3:
+
     if st.button(
         "📰 AI Industry Trends",
         use_container_width=True
     ):
-        task = (
+
+        st.session_state["task"] = (
             "Find recent AI industry news and identify "
             "important trends for an AI startup."
         )
-        st.session_state["task"] = task
+
         st.rerun()
 
 
 # ============================================================
-# USE SELECTED EXAMPLE
+# CURRENT TASK
 # ============================================================
 
-if "task" in st.session_state:
+task = st.session_state["task"]
 
-    task = st.session_state["task"]
+if task:
 
     st.info(
-        f"Selected task: {task}"
+        f"🎯 Selected task: {task}"
+    )
+
+
+# ============================================================
+# MEMORY STATUS
+# ============================================================
+
+memory_count = len(
+    st.session_state["conversation_history"]
+)
+
+if memory_count > 0:
+
+    st.success(
+        f"🧠 Memory active — {memory_count} previous "
+        f"interaction(s) available as context."
     )
 
 
@@ -319,14 +1278,14 @@ if "task" in st.session_state:
 st.markdown("")
 
 analyze = st.button(
-    "🚀  Analyze Intelligence",
+    "🚀 Analyze Intelligence",
     type="primary",
     use_container_width=True
 )
 
 
 # ============================================================
-# RUN AGENT
+# RUN AGENT WITH CONTEXT
 # ============================================================
 
 if analyze:
@@ -340,27 +1299,87 @@ if analyze:
     else:
 
         st.markdown(
-            '<div class="status">'
-            '🟢 Agent is working — selecting tools and '
-            'analyzing information...'
-            '</div>',
+            """
+<div class="status">
+🟢 Agent is working — selecting tools,
+using context and analyzing information...
+</div>
+""",
             unsafe_allow_html=True
         )
 
+        # ----------------------------------------------------
+        # READ SHORT-TERM MEMORY
+        # ----------------------------------------------------
+
+        history = st.session_state[
+            "conversation_history"
+        ]
+
+        recent_history = history[-5:]
+
+        context = ""
+
+        if recent_history:
+
+            context = (
+                "\n\n"
+                "IMPORTANT: The following is previous "
+                "conversation context. Use it to understand "
+                "follow-up questions and avoid asking the "
+                "user to repeat information.\n\n"
+            )
+
+            for item in recent_history:
+
+                context += (
+                    f"User: {item['user']}\n"
+                )
+
+                context += (
+                    f"Agent: {item['agent']}\n\n"
+                )
+
+        # ----------------------------------------------------
+        # CONTEXT AWARE TASK
+        # ----------------------------------------------------
+
+        context_aware_task = (
+            task +
+            context
+        )
+
+        # ----------------------------------------------------
+        # RUN AGENT
+        # ----------------------------------------------------
+
         with st.spinner(
-            "AgentX is researching, observing and analyzing..."
+            "AgentX is researching, observing, "
+            "remembering and analyzing..."
         ):
 
             try:
 
-                result = run_react_agent(task)
+                result = run_react_agent(
+                    context_aware_task
+                )
 
                 if result:
 
                     st.session_state["result"] = result
 
+                    st.session_state[
+                        "conversation_history"
+                    ].append(
+                        {
+                            "user": task,
+                            "agent": result
+                        }
+                    )
+                    save_memory(st.session_state["conversation_history"])
                     st.success(
-                        "✅ Intelligence analysis completed."
+                        "✅ Intelligence analysis completed "
+                        "and conversation saved to memory."
                     )
 
                 else:
@@ -375,22 +1394,27 @@ if analyze:
                     f"❌ Agent error: {type(e).__name__}"
                 )
 
-                st.code(str(e))
+                st.code(
+                    str(e)
+                )
 
 
 # ============================================================
 # RESULT
 # ============================================================
 
-if "result" in st.session_state:
+if st.session_state["result"]:
 
     st.divider()
 
     st.markdown("## 📊 Intelligence Report")
 
-    st.markdown("""
-    <div class="report">
-    """, unsafe_allow_html=True)
+    st.markdown(
+        """
+<div class="report">
+""",
+        unsafe_allow_html=True
+    )
 
     st.markdown(
         st.session_state["result"]
@@ -403,6 +1427,65 @@ if "result" in st.session_state:
 
 
 # ============================================================
+# CONVERSATION MEMORY
+# ============================================================
+
+if st.session_state["conversation_history"]:
+
+    st.divider()
+
+    st.markdown("## 🧠 Conversation Memory")
+
+    st.caption(
+        "AgentX maintains recent conversation context "
+        "for follow-up intelligence requests."
+    )
+
+    for i, item in enumerate(
+        st.session_state["conversation_history"][-5:],
+        1
+    ):
+
+        with st.expander(
+            f"Memory {i} — Previous Interaction"
+        ):
+
+            st.markdown("**👤 User Request**")
+
+            st.write(
+                item["user"]
+            )
+
+            st.markdown("**🤖 Agent Response**")
+
+            st.write(
+                item["agent"]
+            )
+
+    if st.button(
+        "🗑️ Clear Conversation Memory"
+    ):
+
+        st.session_state[
+            "conversation_history"
+        ] = []
+
+        st.session_state[
+            "result"
+        ] = ""
+
+        st.session_state[
+            "task"
+        ] = ""
+
+        st.session_state[
+            "selected_section"
+        ] = "home"
+        save_memory([])
+        st.rerun()
+
+
+# ============================================================
 # TOOL STACK
 # ============================================================
 
@@ -410,24 +1493,36 @@ st.divider()
 
 st.markdown("### 🔧 Intelligence Tool Stack")
 
-st.markdown("""
+st.markdown(
+    """
 <span class="tool">🧠 ReAct Agent</span>
 <span class="tool">🔬 Research API</span>
 <span class="tool">📚 Crossref</span>
 <span class="tool">🌐 OpenAlex</span>
 <span class="tool">📰 News</span>
 <span class="tool">🏢 Competitor Intelligence</span>
-""", unsafe_allow_html=True)
+<span class="tool">🧠 Short-Term Memory</span>
+""",
+    unsafe_allow_html=True
+)
 
 
 # ============================================================
 # FOOTER
 # ============================================================
 
-st.markdown("""
+st.markdown(
+    """
 <div class="footer">
-    <b>AgentX</b> · Autonomous Research & Competitor Intelligence
-    <br>
-    Hackathon Prototype · Goal → Tools → Observations → Insights
+
+<b>AgentX</b> · Autonomous Research & Competitor Intelligence
+
+<br>
+
+Hackathon Prototype ·
+Goal → Context → Tools → Collaboration → Insights
+
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True
+)
