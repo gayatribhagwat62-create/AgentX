@@ -4,22 +4,25 @@ from tools.news import search_news
 
 def search_competitor(company, topic):
 
-    research_query = f"{company} {topic}"
-    news_query = f"{company} {topic}"
+    # Create a company-focused query
+    company_topic = f"{company} recent AI developments"
+
+    print(f"   🔎 Research query: {company_topic}")
+    print(f"   🔎 News query: {company_topic}")
 
     research = search_research(
-        research_query,
+        company_topic,
         limit=3
     )
 
     news = search_news(
-        news_query,
+        company_topic,
         limit=3
     )
 
     return {
         "company": company,
-        "topic": topic,
+        "topic": company_topic,
         "research": research,
         "news": news
     }
