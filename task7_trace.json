@@ -1,0 +1,122 @@
+{
+  "agent": "AgentX",
+  "task": "AI competitor intelligence",
+  "events": [
+    {
+      "timestamp": "2026-08-22T16:33:24.028992",
+      "type": "decision",
+      "details": {
+        "decision": "Baseline single-pass execution"
+      }
+    },
+    {
+      "timestamp": "2026-08-22T16:33:24.029987",
+      "type": "prompt",
+      "details": {
+        "prompt": "AI competitor intelligence"
+      }
+    },
+    {
+      "timestamp": "2026-08-22T16:33:24.029987",
+      "type": "tool_call",
+      "details": {
+        "tool": "research_tool",
+        "call_number": 1
+      }
+    },
+    {
+      "timestamp": "2026-08-22T16:33:24.029987",
+      "type": "tool_call",
+      "details": {
+        "tool": "research_tool",
+        "call_number": 2
+      }
+    },
+    {
+      "timestamp": "2026-08-22T16:33:24.029987",
+      "type": "tool_call",
+      "details": {
+        "tool": "research_tool",
+        "call_number": 3
+      }
+    },
+    {
+      "timestamp": "2026-08-22T16:33:24.029987",
+      "type": "tool_call",
+      "details": {
+        "tool": "research_tool",
+        "call_number": 4
+      }
+    },
+    {
+      "timestamp": "2026-08-22T16:33:24.339285",
+      "type": "decision",
+      "details": {
+        "decision": "Adaptive execution with fallback and recovery"
+      }
+    },
+    {
+      "timestamp": "2026-08-22T16:33:24.339285",
+      "type": "prompt",
+      "details": {
+        "prompt": "AI competitor intelligence"
+      }
+    },
+    {
+      "timestamp": "2026-08-22T16:33:24.339285",
+      "type": "tool_call",
+      "details": {
+        "tool": "research_tool",
+        "call_number": 1
+      }
+    },
+    {
+      "timestamp": "2026-08-22T16:33:24.339285",
+      "type": "error",
+      "details": {
+        "error": "Controlled research tool failure"
+      }
+    },
+    {
+      "timestamp": "2026-08-22T16:33:24.339285",
+      "type": "diagnosis",
+      "details": {
+        "root_cause": "Research tool failure"
+      }
+    },
+    {
+      "timestamp": "2026-08-22T16:33:24.339285",
+      "type": "tool_call",
+      "details": {
+        "tool": "fallback_tool",
+        "call_number": 2
+      }
+    },
+    {
+      "timestamp": "2026-08-22T16:33:24.339285",
+      "type": "recovery",
+      "details": {
+        "action": "Fallback tool",
+        "status": "SUCCESS"
+      }
+    }
+  ],
+  "before": {
+    "latency": 0.302,
+    "tool_calls": 4,
+    "errors": 2,
+    "success": true
+  },
+  "after": {
+    "latency": 0.151,
+    "tool_calls": 2,
+    "errors": 0,
+    "success": true
+  },
+  "improvement": {
+    "execution_time_percent": 50.0,
+    "tool_calls_percent": 50.0,
+    "errors_percent": 100.0
+  },
+  "status": "completed"
+}
